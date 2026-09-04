@@ -1,0 +1,57 @@
+// _variables.scss
+$font: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+
+$light: (
+  bg: #f8fafc,
+  bg-alt: #f1f5f9,
+  bg-elevated: #ffffff,
+  surface: #ffffff,
+  surface-2: #f1f5f9,
+  text: #0f172a,
+  text-muted: #475569,
+  text-soft: #94a3b8,
+  border: #e2e8f0,
+  border-strong: #cbd5e1,
+  primary: #0ea5e9, // Bright modern blue
+  primary-2: #3b82f6,
+  primary-soft: #e0f2fe,
+  accent: #8b5cf6, // Purple accent
+  gradient: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%),
+  shadow-sm: (0 2px 8px rgba(15, 23, 42, 0.04)),
+  shadow-md: (0 8px 24px rgba(15, 23, 42, 0.08)),
+  shadow-lg: (0 24px 48px rgba(15, 23, 42, 0.12)),
+  shadow-glow: (0 10px 40px rgba(14, 165, 233, 0.15)),
+);
+
+// NEON PREMIUM DARK MODE
+$dark: (
+  bg: #030305,
+  bg-alt: #07070a,
+  bg-elevated: #0a0a0f,
+  surface: rgba(15, 15, 20, 0.4),
+  surface-2: rgba(30, 30, 40, 0.4),
+  text: #ffffff,
+  text-muted: #a1a1aa,
+  text-soft: #52525b,
+  border: rgba(255, 255, 255, 0.06),
+  border-strong: rgba(255, 255, 255, 0.12),
+  primary: #00f0ff, // Cyan Neon
+  primary-2: #ff003c, // Pink/Red Neon
+  primary-soft: rgba(0, 240, 255, 0.08),
+  accent: #00ff66, // Green Neon
+  gradient: linear-gradient(135deg, #00f0ff 0%, #ff003c 50%, #00ff66 100%),
+  shadow-sm: (0 4px 12px rgba(0,0,0,0.5)),
+  shadow-md: (0 8px 32px rgba(0,0,0,0.8)),
+  shadow-lg: (0 24px 64px rgba(0,0,0,0.95)),
+  shadow-glow: (0 0 35px rgba(0, 240, 255, 0.2), 0 0 10px rgba(255, 0, 60, 0.1)),
+);
+
+$radius: 16px;
+$radius-sm: 8px;
+$radius-lg: 24px;
+
+@mixin theme($map) {
+  @each $key, $value in $map {
+    --#{$key}: #{$value};
+  }
+}
