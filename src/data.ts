@@ -11,7 +11,7 @@ export interface Feature {
 }
 
 export interface Project {
-  id: 'crm' | 'medica' | 'erp';
+  id: 'crm' | 'medica' | 'erp' | 'jarvis';
   name: string;
   tagline: string;
   role: string;
@@ -112,6 +112,32 @@ export const projects: Project[] = [
       { icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>', title: 'Procesamiento Asíncrono', desc: 'Cierres de mes y cálculos pesados manejados en segundo plano mediante colas de trabajo (BullMQ).' }
     ],
     heroColor: '#00ff66' // Neon green
+  },
+  {
+    id: 'jarvis',
+    name: 'IA JARVIS (LISA)',
+    tagline: 'Asistente personal de voz y texto por IA para Windows: escucha, habla, investiga y redacta documentos con un HUD futurista.',
+    role: 'Full-Stack (Python + TypeScript)',
+    status: 'green',
+    statusLabel: 'Producción',
+    stack: ['Python', 'TypeScript', 'SCSS', 'pywebview', 'customtkinter', 'SQLite', 'Vosk', 'Ollama', 'edge-tts', 'PyInstaller'],
+    screenshot: '/assets/img/jarvis/chat.png',
+    description:
+      'JARVIS (LISA) es un asistente personal de voz y texto estilo Iron Man para Windows: escucha, habla, investiga en internet y redacta documentos reales en .docx con progreso en vivo. Integra 51 habilidades invocables por voz, reconocimiento de voz online y offline (Vosk), voces neuronales en español con detección de emoción, un router de modelos de IA (Gemini, Groq, DeepSeek, OpenRouter y Ollama local) y una interfaz HUD futurista con orbe reactivo y panel de diagnóstico del sistema. Prioriza lo local y lo gratuito, cifra las claves con DPAPI y se empaqueta como ejecutable de Windows, con una suite de 234 tests.',
+    screenshots: [
+      { src: '/assets/img/jarvis/ui.png', title: 'Pantalla Principal', desc: 'Asistente con orbe reactivo y tema HUD futurista.' },
+      { src: '/assets/img/jarvis/chat.png', title: 'Chat con la IA', desc: 'Conversación por voz y texto con respuestas en streaming.' },
+      { src: '/assets/img/jarvis/configuracion.png', title: 'Configuración', desc: 'Ajustes de voz, proveedores LLM y seguridad.' }
+    ],
+    features: [
+      { icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>', title: 'Voz Natural', desc: 'Reconocimiento de voz online y offline (Vosk), síntesis neural (edge-tts) con pausa, reanudación y detección de emoción.' },
+      { icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>', title: 'Router de IA', desc: 'Conecta con Gemini, Groq, DeepSeek, OpenRouter y Ollama local, eligiendo el mejor modelo según la tarea con claves cifradas (DPAPI).' },
+      { icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>', title: '51 Habilidades', desc: 'Reproduce música, abre apps, ejecuta comandos, pone alarmas y coordina tu agenda todo activado por voz.' },
+      { icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/><line x1="9" y1="7" x2="16" y2="7"/><line x1="9" y1="11" x2="16" y2="11"/></svg>', title: 'Documentos Reales', desc: 'Investiga primero en la web y redacta informes, ensayos y trabajos en .docx con progreso visual sección por sección.' },
+      { icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><polyline points="9 12 11 14 15 10"/></svg>', title: 'Seguridad y Auditoría', desc: 'Archivos confinados al workspace, confirmación para acciones de riesgo y auditoría completa en audit.log.' },
+      { icon: '<svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>', title: 'Memoria Persistente', desc: 'Historial de conversaciones en SQLite y memoria de largo plazo con hechos, preferencias y contexto recordado.' }
+    ],
+    heroColor: '#ff8800' // Neon naranja
   }
 ];
 
