@@ -1,6 +1,9 @@
 import './styles/main.scss';
-import { projects, personal, Project } from './data.ts';
+import { categories, categoryLabels, categoryShort, projects, personal, Project, CategoryId } from './data.ts';
 import { initTheme, toggleTheme } from './scripts/theme.ts';
+
+// ---------- State ----------
+let activeFilter: CategoryId | 'todos' = 'todos';
 
 // ---------- Router ----------
 type Route = { name: 'home' } | { name: 'project'; id: string };
@@ -17,6 +20,22 @@ function parseHash(): Route {
 // ---------- Helpers ----------
 function esc(s: string): string {
   return s.replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c] as string));
+}
+
+// ---------- SEO ----------
+function setMeta(title: string, description: string): void {
+  document.title = title;
+  const set = (selector: string, attr: string, value: string) => {
+    const el = document.querySelector(selector);
+    if (el) el.setAttribute(attr, value);
+  };
+  set('meta[name="description"]', 'content', description);
+  set('meta[property="og:title"]', 'content', title);
+  set('meta[property="og:description"]', 'content', description);
+  set('meta[name="twitter:title"]', 'content', title);
+  set('meta[name="twitter:description"]', 'content', description);
+  const canonical = document.querySelector('link[rel="canonical"]');
+  if (canonical) canonical.setAttribute('href', window.location.href.split('#')[0] + (window.location.hash || ''));
 }
 
 // ---------- Layout ----------
@@ -61,19 +80,46 @@ function renderFooter(): string {
 function renderProjectCard(p: Project): string {
   const ledClass = p.status === 'green' ? 'green' : 'amber';
   return `
-    <div class="p-card" data-nav="proyecto/${p.id}">
+    <div class="p-card${p.featured ? ' is-featured' : ''}" data-nav="proyecto/${p.id}">
       <div class="p-thumb">
         <img src="${p.screenshot}" alt="${esc(p.name)}" loading="lazy">
-        <span class="tag">${esc(p.role)}</span>
+        <div class="p-badges">
+          <span class="tag">${esc(p.role)}</span>
+          <span class="p-cat">${esc(categoryShort[p.category])}</span>
+        </div>
+        ${p.featured ? '<span class="featured-badge">Destacado</span>' : ''}
       </div>
       <div class="p-body">
         <h3>${esc(p.name)}</h3>
         <p class="sub">${esc(p.tagline)}</p>
-        <div class="p-stack">${p.stack.map((s) => `<span class="chip">${esc(s)}</span>`).join('')}</div>
+        <div class="p-metrics">
+          ${p.metrics.map((m) => `<div class="pm"><span class="pm-v">${esc(m.value)}</span><span class="pm-l">${esc(m.label)}</span></div>`).join('')}
+        </div>
+        <div class="p-stack">${p.stack.slice(0, 5).map((s) => `<span class="chip">${esc(s)}</span>`).join('')}</div>
         <div class="foot">
-          <span class="status"><span class="led ${ledClass}"></span>${esc(p.statusLabel)}</span>
+          <span class="status"><span class="led ${ledClass}"></span>${esc(p.statusLabel)} · ${esc(p.year)}</span>
           <span class="arrow">→</span>
         </div>
+      </div>
+    </div>`;
+}
+
+function renderFilters(): string {
+  const visible = projects.filter((p) => activeFilter === 'todos' || p.category === activeFilter);
+  return `
+    <div class="filter-wrap">
+      <div class="filter-row" role="tablist" aria-label="Filtrar proyectos por categoría">
+        ${categories
+          .map((c) => {
+            const count = c.id === 'todos' ? projects.length : projects.filter((p) => p.category === c.id).length;
+            return `<button class="filter-chip${activeFilter === c.id ? ' active' : ''}" role="tab" aria-selected="${activeFilter === c.id}" data-filter="${c.id}">
+              ${esc(c.label)}<span class="fc-count">${count}</span>
+            </button>`;
+          })
+          .join('')}
+      </div>
+      <div class="projects" id="projectGrid">
+        ${visible.map(renderProjectCard).join('')}
       </div>
     </div>`;
 }
@@ -110,12 +156,10 @@ function renderHome(): string {
       <div class="container">
         <div class="sec-head">
           <span class="kicker">Proyectos</span>
-          <h2>Aplicaciones que he construido de punta a punta</h2>
-          <p>Sistemas completos: backend, frontend, base de datos y despliegue con Docker.</p>
+          <h2>Siete productos, un mismo estándar de ingeniería</h2>
+          <p>De CRM y ERP a logística en tiempo real, salud, deportes y e-commerce. Cada proyecto incluye backend, frontend, base de datos y despliegue.</p>
         </div>
-        <div class="projects">
-          ${projects.map(renderProjectCard).join('')}
-        </div>
+        ${renderFilters()}
       </div>
     </section>
 
@@ -123,22 +167,22 @@ function renderHome(): string {
       <div class="container about-grid">
         <div>
           <h2>Sobre mí</h2>
-          <p>Soy un Ingeniero de Software Full-Stack enfocado en la construcción de soluciones empresariales robustas, seguras y altamente escalables. Mi experiencia técnica abarca arquitecturas backend (Node.js, Python/Django), interfaces interactivas modernas (Vue, Angular) y despliegue automatizado mediante contenedores (Docker).</p>
-          <p>Con más de dos años de experiencia en entornos de producción, me especializo en transformar problemas complejos de negocio en productos digitales eficientes, manteniendo siempre un alto estándar de calidad de código y rendimiento.</p>
+          <p>Ingeniero de Software Full-Stack enfocado en construir productos que aguantan producción: APIs modulares, frontends rápidos y operación observable. Trabajo con Go y Node.js en backend, Next.js, Vue y Angular en frontend, y PostgreSQL, Redis y Docker como base de infraestructura.</p>
+          <p>He entregado sistemas empresariales completos —CRM, ERP contable, gestión médica y logística en tiempo real— y proyectos de datos como un torneo deportivo con más de 170 jugadores. Mi prioridad es siempre la misma: código mantenible, decisiones documentadas y una experiencia que el usuario final entienda sin manual.</p>
           <div class="badges">
-            <div class="badge"><div class="b-t">Backend & APIs</div><div class="b-s">Node.js · Python · Express · Django</div></div>
-            <div class="badge"><div class="b-t">Frontend</div><div class="b-s">Vue.js · Angular · TypeScript</div></div>
-            <div class="badge"><div class="b-t">Bases de Datos</div><div class="b-s">PostgreSQL · Redis</div></div>
-            <div class="badge"><div class="b-t">Infraestructura</div><div class="b-s">Docker · AWS · Vercel</div></div>
+            <div class="badge"><div class="b-t">Backend & APIs</div><div class="b-s">Go · Node.js · Python · Express · Django</div></div>
+            <div class="badge"><div class="b-t">Frontend</div><div class="b-s">Next.js · React · Vue · Angular · TypeScript</div></div>
+            <div class="badge"><div class="b-t">Datos</div><div class="b-s">PostgreSQL · Redis · SQLite · Supabase</div></div>
+            <div class="badge"><div class="b-t">Infraestructura</div><div class="b-s">Docker · Vercel · WebSockets · CI/CD</div></div>
           </div>
         </div>
         <div class="about-card">
           <h3>Lo que aporto a tu equipo</h3>
           <ul>
-            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Arquitectura de software escalable</li>
-            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Desarrollo de APIs REST seguras</li>
-            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Interfaces modernas y alto rendimiento UX/UI</li>
-            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Integración continua y despliegue (CI/CD)</li>
+            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Arquitectura modular y APIs seguras</li>
+            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Tiempo real con WebSockets y colas</li>
+            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Interfaces accesibles y de alto rendimiento</li>
+            <li><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6L9 17l-5-5"/></svg>Entrega continua y observabilidad en producción</li>
           </ul>
         </div>
       </div>
@@ -162,12 +206,29 @@ function renderProject(p: Project): string {
     <section class="detail-hero">
       <div class="container">
         <p class="crumb"><a data-nav="home">← Inicio</a> / ${esc(p.name)}</p>
+        <div class="detail-topline">
+          <span class="p-cat">${esc(categoryLabels[p.category])}</span>
+          <span class="detail-year">${esc(p.year)}</span>
+          ${p.featured ? '<span class="featured-badge">Destacado</span>' : ''}
+        </div>
         <h1 style="--proj-accent:${p.heroColor}">${esc(p.name)}</h1>
         <p class="lead">${esc(p.description)}</p>
+        <div class="detail-metrics">
+          ${p.metrics.map((m) => `<div class="dm"><span class="dm-v">${esc(m.value)}</span><span class="dm-l">${esc(m.label)}</span></div>`).join('')}
+        </div>
         <div class="meta-chips">
           ${p.stack.map((s) => `<span class="mc">${esc(s)}</span>`).join('')}
         </div>
         <button class="network-back" data-nav="home">← Volver a proyectos</button>
+      </div>
+    </section>
+
+    <section class="highlights">
+      <div class="container">
+        <h2>Lo más relevante</h2>
+        <ul class="hl-list">
+          ${p.highlights.map((h) => `<li><span class="hl-dot"></span>${esc(h)}</li>`).join('')}
+        </ul>
       </div>
     </section>
 
@@ -308,6 +369,36 @@ function bindLightbox() {
 
 let pendingScrollTarget: string | null = null;
 
+function bindProjectCards(): void {
+  document.querySelectorAll('.p-card').forEach((el) => {
+    el.addEventListener('click', () => {
+      const nav = el.getAttribute('data-nav');
+      if (nav) window.location.hash = nav;
+    });
+  });
+}
+
+function bindFilters(): void {
+  document.querySelectorAll('.filter-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const value = chip.getAttribute('data-filter') as CategoryId | 'todos' | null;
+      if (!value || value === activeFilter) return;
+      activeFilter = value;
+      document.querySelectorAll('.filter-chip').forEach((c) => {
+        const on = c.getAttribute('data-filter') === value;
+        c.classList.toggle('active', on);
+        c.setAttribute('aria-selected', String(on));
+      });
+      const visible = projects.filter((p) => activeFilter === 'todos' || p.category === activeFilter);
+      const grid = document.getElementById('projectGrid');
+      if (grid) {
+        grid.innerHTML = visible.map(renderProjectCard).join('');
+        bindProjectCards();
+      }
+    });
+  });
+}
+
 function bind(): void {
   const navLinks = document.getElementById('navLinks');
 
@@ -359,13 +450,9 @@ function bind(): void {
     });
   });
 
-  // Tarjetas de proyectos
-  document.querySelectorAll('.p-card').forEach((el) => {
-    el.addEventListener('click', () => {
-      const nav = el.getAttribute('data-nav');
-      if (nav) window.location.hash = nav;
-    });
-  });
+  // Tarjetas de proyectos y filtros
+  bindProjectCards();
+  bindFilters();
 
   // Apertura del álbum de imágenes
   document.querySelectorAll('.lb-trigger').forEach((el) => {
@@ -393,8 +480,13 @@ function bindAppRender(): void {
     if (route.name === 'project') {
       const p = projects.find((x) => x.id === route.id) ?? projects[0];
       main = renderProject(p);
+      setMeta(`${p.name} — ${personal.name}`, `${p.tagline} Stack: ${p.stack.slice(0, 5).join(', ')}.`);
     } else {
       main = renderHome();
+      setMeta(
+        `${personal.name} — ${personal.role}`,
+        'Portafolio de Kevyn Camacaro, ingeniero de software full-stack: Go, Node.js, Next.js, Vue, Angular, PostgreSQL, Redis y Docker. Siete productos en producción, desde CRM y ERP hasta logística en tiempo real y e-commerce.',
+      );
     }
     app.innerHTML = renderNav() + `<main>${main}</main>` + renderFooter();
     app.querySelector('#themeToggle')?.addEventListener('click', () => {
